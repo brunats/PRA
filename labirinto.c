@@ -55,18 +55,17 @@ ListaEncadeada *caminhoInicial(ListaEncadeada **mapa, int **vet, char **lab, Lis
 	ListaEncadeada *pilha_Aux;
     int tP,indice, x, contC=0;
     int qV=qtdVertices(vet);
+    int saida = posSaida(vet,lab);
     Elemento *elemento;
 
     pilha_Aux = criaLista();
     caminho = criaLista();
-    
-    int saida = posSaida(vet,lab);
-
     adicionaNoInicio(pilha_Aux,inicio);
     printf("\n\n\n");
     
     while(1){
         tP = removeElemento(pilha_Aux);
+        
         if(tP==saida){
         	contC++;
             adicionaNoFim(caminho,tP);
@@ -74,6 +73,7 @@ ListaEncadeada *caminhoInicial(ListaEncadeada **mapa, int **vet, char **lab, Lis
         }
         indice = procuraNoMapa(mapa,tP,qV);
         elemento = mapa[indice]->cabeca;
+        
         while(elemento!=NULL){
             if(!pertenceALista(pilha_Aux,elemento->info) && !pertenceALista(caminho,elemento->info)){
             	adicionaNoInicio(pilha_Aux,elemento->info);                
@@ -81,12 +81,8 @@ ListaEncadeada *caminhoInicial(ListaEncadeada **mapa, int **vet, char **lab, Lis
             elemento = elemento->proximo;
         }
         adicionaNoFim(caminho,tP);
-        //Procura na pilha aux se existe um elemento no caminho encontrado que n está na pilha Aux, adc esse ele a pilha Princ
-         
-        
-        
         if(estah_vazia_listaenc(pilha_Aux)){
-            //printf("Não existe Caminho\n");
+        	//printf("Não existe Caminho\n");
             exit(0);
         }
         //imprime_lista(pilha);    
@@ -114,13 +110,7 @@ ListaEncadeada *caminhoInicial(ListaEncadeada **mapa, int **vet, char **lab, Lis
 			
 		    ePA=ePA->proximo;
 		}
-		
-	//Parte RECURSIVA
-	if(estah_vazia_listaenc(pilha)){
-		exit(0);
-	}else{
-		caminho = caminhoInicial(mapa,vertices,labirinto, pilha, pilha->cabeca); 
-	}
+	
     printf("\n\n\nCaminho %i:\n\t", contC);
     imprime_lista(caminho);
     
@@ -194,11 +184,14 @@ ListaEncadeada **mapeamento(int **vertices){
 
 ListaEncadeada *caminhoMinimo(char **labirinto,int **vertices){
     ListaEncadeada **mapa;
+    ListaEncadeada **listaCaminho;
     ListaEncadeada *caminho;
     ListaEncadeada *pilha;
-
+	
     mapa = mapeamento(vertices);
 	pilha = criaLista();
+	listaCaminho = criaLista();
+	
 	
 	int inicio = posInicio(vertices,labirinto);
 	int saida = posSaida(vertices,labirinto);
@@ -211,11 +204,32 @@ ListaEncadeada *caminhoMinimo(char **labirinto,int **vertices){
     	printf("Não existe posição de saída do labirinto.\n_____Fim do programa_____\n\n\n");
     	exit(0);
     }
-    
-    caminho = caminhoInicial(mapa,vertices,labirinto, pilha, inicio); 
-    
-
-    return caminho;
+    while(1){
+		
+    	caminho = caminhoInicial(mapa, vertices,labirinto, pilha, inicio);
+		if(estah_vazia_listaenc(caminho) >0){
+			adicionaNoInicio(listaCaminho, caminho->tamanho);
+			
+			while(!estah_vazia_listaenc(pilha)){
+				caminho = caminhoInicial(mapa, vertices,labirinto, pilha, inicio);
+				adicionaNoInicio(listaCaminho, caminho->tamanho);
+			}
+		}
+		if(listaCaminho->elemento->tamanho==0) 
+			printf("\nErro %i",ERRO_LISTA_VAZIA);
+		else{ 
+			ListaEncadeada *e = lista->cabeca;
+			ListaEncadeada *menor;
+			menor = e;
+			while(e!=NULL){
+				if(e->tamanho < (e->proximo->tamanho))
+					menor = e;
+				e=e->proximo;
+			}
+			return menor;
+		}
+		printf("\n");
+    }
 }
 
 int carga(char *nomeArquivo,char **lab, int **vertices){

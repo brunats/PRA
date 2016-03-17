@@ -23,6 +23,7 @@ typedef struct{
 	Elemento *cabeca;
 }ListaEncadeada;
 
+
 //protótipo da funções
 ListaEncadeada *criaLista();
 int estah_vazia_listaenc(ListaEncadeada *lista);
