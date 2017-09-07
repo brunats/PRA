@@ -1,5 +1,5 @@
 # PRA
-Arquivos PRA
+Arquivos disciplina PRA - Projeto de Arquivos - CCT UDESC
 Indexação de Arquivos com Lucene
-ALgoritmo Labirinto
+Algoritmo do Labirinto
 
